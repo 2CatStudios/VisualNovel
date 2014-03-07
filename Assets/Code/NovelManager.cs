@@ -6,8 +6,8 @@ using System.Collections;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 //Written by Michael G. Bethke
-//Please bless this project, Jesus
-/*[XmlRoot("VisualNovel")]
+//Thank you, Jesus
+[XmlRoot("VisualNovel")]
 public class VisualNovel
 {
 	
@@ -105,67 +105,73 @@ public class Next
 	[XmlText]
 	public String text;
 }
-*/
 
-public class ExampleScript : MonoBehaviour
+
+public class Novel
+{
+	
+	public String location;
+	public String name;
+	public String author;
+	public String version;
+	
+	public VisualNovel visualNovel;
+}
+
+
+public class NovelManager : MonoBehaviour
 {
 
-	public GUISkin guiSkin;
-	Vector2 scrollPosition;
+	StartupManager startupManager;
 
-	public String novelsDirectory;
- 	string[] availableNovels = new string[0];
-
-
+	internal List<Novel> availableNovels = new List<Novel> ();
+	
+	
 	void Start ()
 	{
 		
-		if ( Directory.Exists ( novelsDirectory ))
+		startupManager = GameObject.FindGameObjectWithTag ( "StartupManager" ).GetComponent<StartupManager> ();
+		
+		foreach ( string directory in Directory.GetDirectories ( startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels" ))
 		{
 			
-			availableNovels = Directory.GetDirectories ( novelsDirectory );
-		}
-	}
-	
-	
-	void OnGUI ()
-	{
-		
-		GUI.skin = guiSkin;
-		
-		GUILayout.BeginHorizontal ();
-		GUILayout.Space ( Screen.width / 2 - 300 );
-		GUILayout.BeginVertical ();
-		GUILayout.Space ( 200 );
-		scrollPosition = GUILayout.BeginScrollView ( scrollPosition, GUILayout.Width ( 600 ), GUILayout.Height (  Screen.height - ( Screen.height / 4 + 30 )));
-		
-		foreach ( string novel in availableNovels )
-		{
-			
-			if ( GUILayout.Button ( novel.Remove ( 0, novel.LastIndexOf ( Path.DirectorySeparatorChar ) + 1 )))
+			if ( File.Exists ( directory + Path.DirectorySeparatorChar + "Info.txt" ))
 			{
+			
+				Novel tempNovel = new Novel ();
+				tempNovel.location = directory.ToString ();
+				using ( StreamReader reader = new StreamReader ( directory + Path.DirectorySeparatorChar + "Info.txt" ))
+				{
+					
+					tempNovel.name = reader.ReadLine ();
+					tempNovel.author = reader.ReadLine ();
+					tempNovel.version = reader.ReadLine ();
+				}
 				
-				LoadNovel ( novel, novel.Remove ( 0, novel.LastIndexOf ( Path.DirectorySeparatorChar ) + 1 ));
+				if ( tempNovel.name != null && tempNovel.author != null && tempNovel.version != null && File.Exists ( directory + Path.DirectorySeparatorChar + tempNovel.name + ".xml" ))
+					availableNovels.Add ( tempNovel );
+				else
+					UnityEngine.Debug.Log ( "Folder not added" );
 			}
 		}
-		
-		GUILayout.EndScrollView ();
-		GUILayout.EndVertical ();
-		GUILayout.EndHorizontal ();
 	}
 	
 	
-	void LoadNovel ( string parentDirectory, string novelName )
+	void LoadNovel ( Novel novel )
 	{
 		
 		UnityEngine.Debug.Log ( "LoadNovel" );
-		
-		System.IO.StreamReader streamReader = new System.IO.StreamReader ( parentDirectory + Path.DirectorySeparatorChar + novelName + ".xml" );
+				
+		System.IO.StreamReader streamReader = new System.IO.StreamReader ( novel.location + Path.DirectorySeparatorChar + novel.name + ".xml" );
 		string xml = streamReader.ReadToEnd();
 		streamReader.Close();
-						
+								
 		VisualNovel currentNovel = xml.DeserializeXml<VisualNovel>();
+		novel.visualNovel = currentNovel;
 		
+		GameObject.FindGameObjectWithTag ( "LoadingText" ).GetComponent<GUIText>().text = "";
+		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "";
+			
 		UnityEngine.Debug.Log ( "LoadNovel Done" );
 		UnityEngine.Debug.Log ( currentNovel );
 		UnityEngine.Debug.Log ( currentNovel.playerStory );
@@ -180,15 +186,7 @@ public class ExampleScript : MonoBehaviour
 			UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6].prompt.next.text );
 		else
 			UnityEngine.Debug.Log ( "Prompt not displayed- not same type!" );
+			
+		UnityEngine.Debug.Log ( availableNovels[0].visualNovel );
 	}
 }
-
-
-
-
-
-
-
-
-
-
