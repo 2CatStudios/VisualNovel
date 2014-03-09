@@ -11,15 +11,22 @@ using System.Collections.Generic;
 public class VisualNovel
 {
 	
-//	[XmlElement("Resources")]
-//	public Resources resources;
+	[XmlElement("Resources")]
+	public Resources resources;
 	
 	[XmlElement("PlayerStory")]
 	public PlayerStory playerStory;
 	
-//	[XmlElement("MainStory")]
-//	public MainStory[] mainStory;
+	[XmlElement("SecondStory")]
+	public SecondStory[] secondStory;
 
+}
+
+
+public class Resources
+{
+	
+	
 }
 
 
@@ -119,11 +126,20 @@ public class Novel
 }
 
 
+public class SecondStory
+{
+	
+	
+}
+
+
 public class NovelManager : MonoBehaviour
 {
 
 	StartupManager startupManager;
-
+	
+	internal Novel activeNovel;
+	internal int novelPlace;
 	internal List<Novel> availableNovels = new List<Novel> ();
 	
 	
@@ -159,8 +175,9 @@ public class NovelManager : MonoBehaviour
 	
 	void LoadNovel ( Novel novel )
 	{
-		
-		UnityEngine.Debug.Log ( "LoadNovel" );
+	
+		novelPlace = 0;
+		activeNovel = null;
 				
 		System.IO.StreamReader streamReader = new System.IO.StreamReader ( novel.location + Path.DirectorySeparatorChar + novel.name + ".xml" );
 		string xml = streamReader.ReadToEnd();
@@ -168,11 +185,11 @@ public class NovelManager : MonoBehaviour
 								
 		VisualNovel currentNovel = xml.DeserializeXml<VisualNovel>();
 		novel.visualNovel = currentNovel;
+		activeNovel = novel;
 		
 		GameObject.FindGameObjectWithTag ( "LoadingText" ).GetComponent<GUIText>().text = "";
 		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "";
-			
-		UnityEngine.Debug.Log ( "LoadNovel Done" );
+/*
 		UnityEngine.Debug.Log ( currentNovel );
 		UnityEngine.Debug.Log ( currentNovel.playerStory );
 		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue );
@@ -188,5 +205,6 @@ public class NovelManager : MonoBehaviour
 			UnityEngine.Debug.Log ( "Prompt not displayed- not same type!" );
 			
 		UnityEngine.Debug.Log ( availableNovels[0].visualNovel );
+*/	
 	}
 }

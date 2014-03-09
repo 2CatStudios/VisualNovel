@@ -55,7 +55,7 @@ public class GUIManager : MonoBehaviour
 		} else
 		{
 			
-			
+			GUI.Label ( new Rect ( 24, Screen.height - 420, Screen.width - 48, 400 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].body );
 		}
 	}
 }
