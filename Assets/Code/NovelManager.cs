@@ -26,7 +26,19 @@ public class VisualNovel
 public class Resources
 {
 	
+	[XmlElement ( "resource" )]
+	public Resource[] allResources;
+}
+
+
+public class Resource
+{
 	
+	[XmlAttribute]
+	public String id;
+	
+	[XmlText]
+	public String location;
 }
 
 
@@ -137,16 +149,23 @@ public class NovelManager : MonoBehaviour
 {
 
 	StartupManager startupManager;
+	GUIManager guiManager;
 	
 	internal Novel activeNovel;
 	internal int novelPlace;
 	internal List<Novel> availableNovels = new List<Novel> ();
+	
+	SortedDictionary<string, Resource> availableResources = new SortedDictionary<string, Resource>();
+	
+	Texture2D backgroundTexture;
+	Texture2D speakerTexture;
 	
 	
 	void Start ()
 	{
 		
 		startupManager = GameObject.FindGameObjectWithTag ( "StartupManager" ).GetComponent<StartupManager> ();
+		guiManager = GameObject.FindGameObjectWithTag ( "GUIManager" ).GetComponent<GUIManager> ();
 		
 		foreach ( string directory in Directory.GetDirectories ( startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels" ))
 		{
@@ -173,7 +192,19 @@ public class NovelManager : MonoBehaviour
 	}
 	
 	
-	void LoadNovel ( Novel novel )
+	void StartNovel ()
+	{
+		
+		GameObject.FindGameObjectWithTag ( "LoadingText" ).GetComponent<GUIText>().text = "";
+		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "";
+		GameObject.FindGameObjectWithTag ( "Background" ).GetComponent<GUITexture>().texture = backgroundTexture;
+		GameObject.FindGameObjectWithTag ( "Speaker" ).GetComponent<GUITexture>().texture = speakerTexture;
+		
+		guiManager.inNovel = true;
+	}
+	
+	
+	IEnumerator LoadNovel ( Novel novel )
 	{
 	
 		novelPlace = 0;
@@ -182,29 +213,41 @@ public class NovelManager : MonoBehaviour
 		System.IO.StreamReader streamReader = new System.IO.StreamReader ( novel.location + Path.DirectorySeparatorChar + novel.name + ".xml" );
 		string xml = streamReader.ReadToEnd();
 		streamReader.Close();
+		
 								
 		VisualNovel currentNovel = xml.DeserializeXml<VisualNovel>();
 		novel.visualNovel = currentNovel;
 		activeNovel = novel;
 		
-		GameObject.FindGameObjectWithTag ( "LoadingText" ).GetComponent<GUIText>().text = "";
-		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "";
-/*
-		UnityEngine.Debug.Log ( currentNovel );
-		UnityEngine.Debug.Log ( currentNovel.playerStory );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue.Length );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6] );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6].id );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6].speaker );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6].speakerImage );
-		UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6].body );
-		if ( currentNovel.playerStory.dialogue[6].prompt.type == "next" )
-			UnityEngine.Debug.Log ( currentNovel.playerStory.dialogue[6].prompt.next.text );
-		else
-			UnityEngine.Debug.Log ( "Prompt not displayed- not same type!" );
+		int resourcesCount = 0;
+		while ( resourcesCount < novel.visualNovel.resources.allResources.Length )
+		{
 			
-		UnityEngine.Debug.Log ( availableNovels[0].visualNovel );
-*/	
+			availableResources.Add ( novel.visualNovel.resources.allResources[resourcesCount].id, novel.visualNovel.resources.allResources[resourcesCount]);
+			
+			resourcesCount += 1;
+		}
+
+		if ( availableResources.ContainsKey ( "Background" ))
+		{
+			
+			WWW backgroundWWW = new WWW ( "file://" + novel.location + Path.DirectorySeparatorChar + "Images" + Path.DirectorySeparatorChar + availableResources["Background"].location );
+			yield return backgroundWWW;
+							
+			backgroundTexture = new Texture2D ( Screen.width, Screen.height );
+			backgroundWWW.LoadImageIntoTexture ( backgroundTexture );
+		}
+		
+		if ( availableResources.ContainsKey ( novel.visualNovel.playerStory.dialogue[0].speakerImage ))
+		{
+					
+			WWW speakerWWW = new WWW ( "file://" + novel.location + Path.DirectorySeparatorChar + "Images" + Path.DirectorySeparatorChar + availableResources[novel.visualNovel.playerStory.dialogue[0].speakerImage].location );
+			yield return speakerWWW;
+			
+			speakerTexture = new Texture2D ( Screen.width, Screen.height, TextureFormat.ARGB32, true );
+			speakerWWW.LoadImageIntoTexture ( speakerTexture );
+		}
+
+		StartNovel ();
 	}
 }

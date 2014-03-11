@@ -22,5 +22,8 @@ public class StartupManager : MonoBehaviour
 	
 		if ( !Directory.Exists ( parentFolder ))
 			Directory.CreateDirectory ( parentFolder );
+			
+		GameObject.FindGameObjectWithTag ( "Background" ).GetComponent<GUITexture>().pixelInset = new Rect ( 0, 0, Screen.width, Screen.height );
+		GameObject.FindGameObjectWithTag ( "Speaker" ).GetComponent<GUITexture>().pixelInset = new Rect ( 0, 0, Screen.width/3, Screen.height  );
 	}
 }

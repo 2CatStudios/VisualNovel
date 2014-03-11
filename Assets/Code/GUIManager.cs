@@ -8,17 +8,25 @@ public class GUIManager : MonoBehaviour
 	NovelManager novelManager;
 
 	public GUISkin guiSkin;
+	GUIStyle clearStyle;
 	Vector2 scrollPosition;
 	
 	internal bool inNovel = false;
+	internal bool showNovelList = true;
 
 	
 	void Start ()
 	{
 		
 		novelManager = GameObject.FindGameObjectWithTag ( "NovelManager" ).GetComponent <NovelManager> ();
-		
 		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "UnityVisualNovel";
+		
+		clearStyle = new GUIStyle ();
+		clearStyle.font = guiSkin.font;
+		clearStyle.normal.background = null;
+		clearStyle.hover.background = guiSkin.button.normal.background;
+		clearStyle.border = new RectOffset ( 10, 10, 10, 10 );
+		clearStyle.padding = new RectOffset ( 6, 6, 3, 3 );
 	}
 	
 	
@@ -27,7 +35,7 @@ public class GUIManager : MonoBehaviour
 		
 		GUI.skin = guiSkin;
 		
-		if ( inNovel == false )
+		if ( showNovelList == true )
 		{
 			
 			GUILayout.BeginHorizontal ();
@@ -43,8 +51,8 @@ public class GUIManager : MonoBehaviour
 				{
 					
 					GameObject.FindGameObjectWithTag ( "LoadingText" ).GetComponent<GUIText>().text = "Loading " + novel.name;
-					inNovel = true;
 					
+					showNovelList = false;
 					novelManager.SendMessage ( "LoadNovel", novel );
 				}
 			}
@@ -55,7 +63,17 @@ public class GUIManager : MonoBehaviour
 		} else
 		{
 			
-			GUI.Label ( new Rect ( 24, Screen.height - 420, Screen.width - 48, 400 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].body );
+			if ( inNovel == true )
+			{
+				
+				if ( Input.GetKeyDown ( KeyCode.Escape ))
+				{
+					
+					UnityEngine.Debug.Log ( "Pause Menu" );
+				}
+			
+				GUI.Label ( new Rect ( 24, Screen.height - 420, Screen.width - 48, 400 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].body );
+			}
 		}
 	}
 }
