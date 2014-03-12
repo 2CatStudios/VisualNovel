@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 //Written by Michael G. Bethke
@@ -72,7 +73,35 @@ public class GUIManager : MonoBehaviour
 					UnityEngine.Debug.Log ( "Pause Menu" );
 				}
 			
+				GUI.Label ( new Rect ( 12, Screen.height - 480, 200, 46 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].speaker );
 				GUI.Label ( new Rect ( 24, Screen.height - 420, Screen.width - 48, 400 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].body );
+				
+				switch ( novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.type )
+				{
+				
+					case "next" :
+					if ( GUI.Button ( new Rect ( Screen.width/2 - 400, Screen.height/2 - 115, Screen.width/2, 60 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.next.text ))
+					{
+							
+						novelManager.novelPlace = Convert.ToInt16 ( novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.next.lead );
+						break;
+					}
+					break;
+					case "yes-no" :
+					if ( GUI.Button ( new Rect ( Screen.width/2 - 400, Screen.height/2 - 150, Screen.width/2, 60 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.yes.text ))
+					{
+											
+						novelManager.novelPlace = Convert.ToInt16 ( novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.yes.lead );
+						break;
+					}
+					if ( GUI.Button ( new Rect ( Screen.width/2 - 400, Screen.height/2 - 80, Screen.width/2, 60 ), novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.no.text ))
+					{
+				
+						novelManager.novelPlace = Convert.ToInt16 ( novelManager.activeNovel.visualNovel.playerStory.dialogue[novelManager.novelPlace].prompt.no.lead );
+						break;
+					}
+					break;
+				}
 			}
 		}
 	}

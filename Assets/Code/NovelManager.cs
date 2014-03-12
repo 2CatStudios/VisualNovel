@@ -90,6 +90,9 @@ public class Prompt
 	
 	[XmlElement("next")]
 	public Next next;
+	
+//	[XmlElement("list")]
+//	public Next next;
 }
 
 
