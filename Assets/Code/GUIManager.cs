@@ -101,6 +101,8 @@ public class GUIManager : MonoBehaviour
 						break;
 					}
 					break;
+                    default:
+                    break;
 				}
 			}
 		}

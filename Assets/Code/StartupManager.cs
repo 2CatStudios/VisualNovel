@@ -8,7 +8,7 @@ public class StartupManager : MonoBehaviour
 {
 
 	static String mac = Path.DirectorySeparatorChar + "Users" + Path.DirectorySeparatorChar  + Environment.UserName + Path.DirectorySeparatorChar + "Library" + Path.DirectorySeparatorChar  + "Application Support" + Path.DirectorySeparatorChar + "2Cat Studios" + Path.DirectorySeparatorChar + "UnityVisualNovel";
-	static String windows = Environment.SpecialFolder.ApplicationData + Path.DirectorySeparatorChar  + "2Cat Studios" + Path.DirectorySeparatorChar + "UnityVisualNovel";
+	static String windows = Environment.GetFolderPath ( Environment.SpecialFolder.CommonApplicationData ) + Path.DirectorySeparatorChar  + "2Cat Studios" + Path.DirectorySeparatorChar + "UnityVisualNovel";// Environment.SpecialFolder.ApplicationData + Path.DirectorySeparatorChar  + "2Cat Studios" + Path.DirectorySeparatorChar + "UnityVisualNovel";
 	internal String parentFolder;
 	
 

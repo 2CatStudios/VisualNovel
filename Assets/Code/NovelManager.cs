@@ -169,29 +169,40 @@ public class NovelManager : MonoBehaviour
 		
 		startupManager = GameObject.FindGameObjectWithTag ( "StartupManager" ).GetComponent<StartupManager> ();
 		guiManager = GameObject.FindGameObjectWithTag ( "GUIManager" ).GetComponent<GUIManager> ();
-		
-		foreach ( string directory in Directory.GetDirectories ( startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels" ))
-		{
-			
-			if ( File.Exists ( directory + Path.DirectorySeparatorChar + "Info.txt" ))
-			{
-			
-				Novel tempNovel = new Novel ();
-				tempNovel.location = directory.ToString ();
-				using ( StreamReader reader = new StreamReader ( directory + Path.DirectorySeparatorChar + "Info.txt" ))
-				{
-					
-					tempNovel.name = reader.ReadLine ();
-					tempNovel.author = reader.ReadLine ();
-					tempNovel.version = reader.ReadLine ();
-				}
-				
-				if ( tempNovel.name != null && tempNovel.author != null && tempNovel.version != null && File.Exists ( directory + Path.DirectorySeparatorChar + tempNovel.name + ".xml" ))
-					availableNovels.Add ( tempNovel );
-				else
-					UnityEngine.Debug.Log ( "Folder not added" );
-			}
-		}
+
+        if ( !Directory.Exists(startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels"))
+        {
+
+            Directory.CreateDirectory(startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels");
+            UnityEngine.Debug.Log("Directory does not exist!");
+        }
+
+        if (Directory.Exists(startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels"))
+        {
+
+            foreach (string directory in Directory.GetDirectories(startupManager.parentFolder + Path.DirectorySeparatorChar + "Novels"))
+            {
+
+                if (File.Exists(directory + Path.DirectorySeparatorChar + "Info.txt"))
+                {
+
+                    Novel tempNovel = new Novel();
+                    tempNovel.location = directory.ToString();
+                    using (StreamReader reader = new StreamReader(directory + Path.DirectorySeparatorChar + "Info.txt"))
+                    {
+
+                        tempNovel.name = reader.ReadLine();
+                        tempNovel.author = reader.ReadLine();
+                        tempNovel.version = reader.ReadLine();
+                    }
+
+                    if (tempNovel.name != null && tempNovel.author != null && tempNovel.version != null && File.Exists(directory + Path.DirectorySeparatorChar + tempNovel.name + ".xml"))
+                        availableNovels.Add(tempNovel);
+                    else
+                        UnityEngine.Debug.Log("Folder not added");
+                }
+            }
+        }
 	}
 	
 	
