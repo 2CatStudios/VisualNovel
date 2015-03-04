@@ -20,7 +20,7 @@ public class GUIManager : MonoBehaviour
 	{
 		
 		novelManager = GameObject.FindGameObjectWithTag ( "NovelManager" ).GetComponent <NovelManager> ();
-		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "UnityVisualNovel";
+		GameObject.FindGameObjectWithTag ( "TitleText" ).GetComponent<GUIText>().text = "VisualNovelProject";
 		
 		clearStyle = new GUIStyle ();
 		clearStyle.font = guiSkin.font;
